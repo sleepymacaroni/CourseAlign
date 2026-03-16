@@ -2,6 +2,14 @@
 #include <algorithm>
 
 bool Schedule::canAdd(const Section& newClass) const {
+    int totalUnits = 0;
+    for (const Section& s : classes) {
+        totalUnits += s.getUnits();
+    }
+    if (totalUnits + newClass.getUnits() > 21) {
+        return false;
+    }
+    
     for (const Section& currClass : classes) {
         if (conflicts(currClass, newClass)) return false;
         if (currClass.getSectionId() == newClass.getSectionId()) return false;
