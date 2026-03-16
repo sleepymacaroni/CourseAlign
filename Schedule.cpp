@@ -27,12 +27,20 @@ std::vector<Section> Schedule::getClasses() const {
 }
 
 bool conflicts(const Section& a, const Section& b) {
+    // if either section has a TBD time (represented as "00:00"), assume no conflict
+    if (a.getStartTime() == "00:00" || a.getEndTime() == "00:00" ||
+        b.getStartTime() == "00:00" || b.getEndTime() == "00:00") {
+        return false;
+    }
+
     const std::set<std::string>& aDays = a.getDays();
     const std::set<std::string>& bDays = b.getDays();
 
     for (const std::string& day : aDays) {
         if (bDays.find(day) != bDays.end()) {
-            if (a.getStartTime() < b.getEndTime() && b.getStartTime() < a.getEndTime()) {
+            // simple string comparison, assumes format "HH:MM"
+            if (a.getStartTime() < b.getEndTime() &&
+                b.getStartTime() < a.getEndTime()) {
                 return true;
             }
         }
