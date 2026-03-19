@@ -5,6 +5,18 @@
 #include <set>
 #include <stdexcept>
 
+//make H:MM -> HH:MM
+std::string normalizeTime(const std::string& time) {
+    if (time == "TBD" || time.empty()) return "00:00";
+
+    //add leading 0 if needed
+    if (time.size() == 4) {
+        return "0" + time;
+    }
+
+    return time;
+}
+
 std::set<std::string> parseDays(const std::string& raw) {
     std::set<std::string> days;
     for (size_t i = 0; i < 5 && i < raw.size(); i++) {
@@ -56,21 +68,37 @@ std::vector<Section> loadSectionsFromCsv(const std::string& path) {
 
         std::string start = "00:00";
         std::string end = "00:00";
-        if (!days.empty() && fields[7] != "TBD" && fields[8] != "TBD") {
-            start = fields[7];
-            end = fields[8];
+
+        if (!days.empty()) {
+            start = normalizeTime(fields[7]);
+            end = normalizeTime(fields[8]);
         }
 
         int units = 0;
         if (!fields[9].empty()) {
-            try { units = std::stoi(fields[9]); } 
-            catch (...) { std::cerr << "Invalid units at line " << lineNumber << std::endl; }
+            try { 
+                units = std::stoi(fields[9]); 
+            } catch (...) { 
+                std::cerr << "Invalid units at line " << lineNumber << std::endl; 
+            }
         } else {
             std::cout << "Empty Units: " << lineNumber << std::endl;
         }
 
         std::string instructionMode = fields[10];
-        sections.emplace_back(courseCode, courseTitle, sectionId, component, instructor, days, start, end, units, instructionMode);
+
+        sections.emplace_back(
+            courseCode,
+            courseTitle,
+            sectionId,
+            component,
+            instructor,
+            days,
+            start,
+            end,
+            units,
+            instructionMode
+        );
     }
 
     return sections;
