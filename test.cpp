@@ -2,6 +2,7 @@
 #include "Section.h"
 #include "Schedule.h"
 #include "dataHandling/loadSections.h"
+#include "printSchedule.h"
 
 int main() {
     try {
@@ -29,6 +30,8 @@ int main() {
                       << s.getUnits() << " | Mode: "
                       << s.getInstructionMode() << std::endl;
         }
+
+        printSchedule(mySchedule);
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
