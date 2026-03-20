@@ -1,4 +1,5 @@
 #include "ScheduleBuild.h"
+#include <algorithm>
 #include "Schedule.h"
 #include "Section.h"
 #include <vector>
@@ -8,15 +9,18 @@ using namespace std;
 
 
 vector<Section> getCourses(vector<Section> &sections, vector<string> courseTitles) {
-    //returns vector of sections with only listed class names
     vector<Section> activeClasses;
+
     for (const Section &s: sections) {
+        std::string code = s.getCourseCode();
+	code.erase(std::remove(code.begin(), code.end(), ' '), code.end());
         for (const string &courseTitle: courseTitles) {
-            if (courseTitle == s.getCourseTitle()) {
+            if (courseTitle == code) {
                 activeClasses.push_back(s);
             }
         }
     }
+
     return activeClasses;
 }
 
@@ -42,19 +46,24 @@ vector<Section> getLatestEndTime(vector<Section>& activeClasses, string latestEn
     return latestEndTimes;
 }
 
+#include <unordered_map>
+
 vector<vector<Section>> splitCourses(vector<Section> activeCourses) {
-    // splits courses based on course title (eg: MATH 100) into a 2d vector by name
-    vector<vector<Section>> splitCourses;
-    splitCourses.push_back(vector<Section>());
-    int individualCourses = 0;
-    for (int i = 0; i < activeCourses.size(); i++){
-        if (i > 0 && activeCourses[i].getCourseTitle() != activeCourses[i - 1].getCourseTitle()) {
-            splitCourses.push_back(vector<Section>());
-            individualCourses++;
-        }
-        splitCourses[individualCourses].push_back(activeCourses[i]);
+    unordered_map<string, vector<Section>> groups;
+
+    for (const Section& s : activeCourses) {
+        string code = s.getCourseCode();
+        code.erase(std::remove(code.begin(), code.end(), ' '), code.end());
+
+        groups[code].push_back(s);
     }
-    return splitCourses;
+
+    vector<vector<Section>> result;
+    for (auto& pair : groups) {
+        result.push_back(pair.second);
+    }
+
+    return result;
 }
 
 void recurseLoop(vector<Schedule>& schedules, vector<vector<Section>>& courses, int n, Schedule current) {
@@ -80,8 +89,15 @@ vector<Schedule> createSchedules(vector<Section>& sections, vector<string> cours
     vector<vector<Section>> groupedCourses;
 
     activeCourses = getCourses(sections, courseTitles);
-    activeCourses = getEarliestStartTime(activeCourses, earliestStartTime);
-    activeCourses = getLatestEndTime(activeCourses, latestEndTime);
+
+    if (startPreference) {
+	    activeCourses = getEarliestStartTime(activeCourses, earliestStartTime);
+    }
+
+    if (endPreference) {
+	    activeCourses = getLatestEndTime(activeCourses, latestEndTime);
+    }
+
     groupedCourses = splitCourses(activeCourses);
 
     int n = 0;
