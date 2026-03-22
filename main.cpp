@@ -21,7 +21,7 @@ int main() {
         std::string input;
         std::getline(std::cin, input);
 
-        std::regex pattern("^([A-Z]+[0-9]+)(\\s+[A-Z]+[0-9]+)*$");
+        std::regex pattern("^([A-Z]+[0-9]+[A-Z]*)(\\s+[A-Z]+[0-9]+[A-Z]*)*$");
         if (!std::regex_match(input, pattern)) {
             std::cerr << "Invalid format. Example: MATH245 MATH254\n";
             return 1;
