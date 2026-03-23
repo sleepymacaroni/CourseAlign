@@ -148,7 +148,7 @@ vector<Schedule> createSchedules(vector<Section>& sections, vector<string> cours
 
     groupedCourses = splitCourses(activeCourses);
 
-    if (groupedCourses.size() < courseTitles.size()) {
+    if (groupedCourses.size() == 0) {
         return schedules;
     }
 
