@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
+#include <iostream>
 using namespace std;
 
 
@@ -24,13 +25,45 @@ vector<Section> getCourses(vector<Section> &sections, vector<string> courseTitle
     return activeClasses;
 }
 
+vector<Section> removeDuplicates(vector<Section>& unmetCourses) {
+    vector<Section> cleaned;
+    for (const Section& s : unmetCourses) {
+        bool exists = false;
+        for (const Section& c : cleaned) {
+            if (c.getCourseCode() == s.getCourseCode()) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            cleaned.push_back(s);
+        }
+    }
+    return cleaned;
+}
+
 vector<Section> getEarliestStartTime(vector<Section> &activeClasses, string earliestStartTime) {
     // takes input start time as a string with format XX:XX, returns vector of sections excluding times earlier than that
     vector<Section> earliestStartTimes;
+    vector<Section> unmetCourses;
     for (const Section &s: activeClasses) {
         if (s.getStartTime() >= earliestStartTime) {
             earliestStartTimes.push_back(s);
         }
+        else {
+            unmetCourses.push_back(s);
+        }
+    }
+    if (!unmetCourses.empty()) {
+        unmetCourses = removeDuplicates(unmetCourses);
+        cout << "No sections of ";
+        for (int i = 0; i < unmetCourses.size(); i++) {
+            cout << unmetCourses[i].getCourseCode();
+            if (i != unmetCourses.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << " meet the specified start time preferences." << endl;
     }
     return earliestStartTimes;
 }
@@ -38,10 +71,25 @@ vector<Section> getEarliestStartTime(vector<Section> &activeClasses, string earl
 vector<Section> getLatestEndTime(vector<Section>& activeClasses, string latestEndTime) {
     // takes input end time as a string with format XX:XX, returns vector of sections excluding times later than that
     vector<Section> latestEndTimes;
+    vector<Section> unmetCourses;
     for (const Section& s : activeClasses) {
         if (s.getEndTime() <= latestEndTime) {
             latestEndTimes.push_back(s);
         }
+        else {
+            unmetCourses.push_back(s);
+        }
+    }
+    if (!unmetCourses.empty()) {
+        unmetCourses = removeDuplicates(unmetCourses);
+        cout << "No sections of ";
+        for (int i = 0; i < unmetCourses.size(); i++) {
+            cout << unmetCourses[i].getCourseCode();
+            if (i != unmetCourses.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << " meet the specified end time preferences." << endl;
     }
     return latestEndTimes;
 }

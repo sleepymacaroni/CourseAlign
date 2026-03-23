@@ -8,6 +8,7 @@ using namespace std;
 
 // Function declarations
 vector<Section> getCourses(vector<Section>& sections, vector<string> courseTitles);
+vector<Section> removeDuplicates(vector<Section>& unmetCourses);
 vector<Section> getEarliestStartTime(vector<Section>& activeClasses, string earliestStartTime);
 vector<Section> getLatestEndTime(vector<Section>& activeClasses, string latestEndTime);
 vector<vector<Section>> splitCourses(vector<Section> activeCourses);
