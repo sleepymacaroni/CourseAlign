@@ -148,6 +148,10 @@ vector<Schedule> createSchedules(vector<Section>& sections, vector<string> cours
 
     groupedCourses = splitCourses(activeCourses);
 
+    if (groupedCourses.size() < courseTitles.size()) {
+        return schedules;
+    }
+
     int n = 0;
     Schedule current;
 
