@@ -25,21 +25,13 @@ vector<Section> getCourses(vector<Section> &sections, vector<string> courseTitle
     return activeClasses;
 }
 
-vector<Section> removeDuplicates(vector<Section>& unmetCourses) {
-    vector<Section> cleaned;
-    for (const Section& s : unmetCourses) {
-        bool exists = false;
-        for (const Section& c : cleaned) {
-            if (c.getCourseCode() == s.getCourseCode()) {
-                exists = true;
-                break;
-            }
-        }
-        if (!exists) {
-            cleaned.push_back(s);
+bool checkExistence(Section course, vector<Section> &courses) {
+    for (const Section &s: courses) {
+        if (s.getCourseCode() == course.getCourseCode()) {
+            return true;
         }
     }
-    return cleaned;
+    return false;
 }
 
 vector<Section> getEarliestStartTime(vector<Section> &activeClasses, string earliestStartTime) {
@@ -54,12 +46,19 @@ vector<Section> getEarliestStartTime(vector<Section> &activeClasses, string earl
             unmetCourses.push_back(s);
         }
     }
-    if (!unmetCourses.empty()) {
-        unmetCourses = removeDuplicates(unmetCourses);
+
+    vector<Section> trulyUnmet;
+    for (const Section &s : unmetCourses) {
+        if (!checkExistence(s, earliestStartTimes) && !checkExistence(s, trulyUnmet)) {
+            trulyUnmet.push_back(s);
+        }
+    }
+
+    if (!trulyUnmet.empty()) {
         cout << "No sections of ";
-        for (int i = 0; i < unmetCourses.size(); i++) {
-            cout << unmetCourses[i].getCourseCode();
-            if (i != unmetCourses.size() - 1) {
+        for (int i = 0; i < trulyUnmet.size(); i++) {
+            cout << trulyUnmet[i].getCourseCode();
+            if (i != trulyUnmet.size() - 1) {
                 cout << ", ";
             }
         }
@@ -80,12 +79,19 @@ vector<Section> getLatestEndTime(vector<Section>& activeClasses, string latestEn
             unmetCourses.push_back(s);
         }
     }
-    if (!unmetCourses.empty()) {
-        unmetCourses = removeDuplicates(unmetCourses);
+
+    vector<Section> trulyUnmet;
+    for (const Section &s : unmetCourses) {
+        if (!checkExistence(s, latestEndTimes) && !checkExistence(s, trulyUnmet)) {
+            trulyUnmet.push_back(s);
+        }
+    }
+
+    if (!trulyUnmet.empty()) {
         cout << "No sections of ";
-        for (int i = 0; i < unmetCourses.size(); i++) {
-            cout << unmetCourses[i].getCourseCode();
-            if (i != unmetCourses.size() - 1) {
+        for (int i = 0; i < trulyUnmet.size(); i++) {
+            cout << trulyUnmet[i].getCourseCode();
+            if (i != trulyUnmet.size() - 1) {
                 cout << ", ";
             }
         }
